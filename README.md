@@ -1,11 +1,10 @@
 About
 -----
-This tools keeps file encrypted with separate file headers. For example let's create a backup on disk device:
+This tools keeps file encrypted with separate file headers. Let's create a backup on disk device:
 ```
 xcbackup -c TestPassword_123 /dev/sdzzz dir1 dir2 file1
 ```
-If some sectors are gone, you should not loose other files, because each file is prefixed with byte sequence and has its own encryption header and file header before its body. 
-If a corrupted data sequence is found, then the progranm will lookup for nearest file prefix bytes found to extract next file.
+If only some sectors are gone, you should not loose other files in the backup, because each file is prefixed with byte sequence and has separate encryption header and separate file header located before its encrypted body. If a corrupted data sequence is found by checking HMAC, then the progranm will lookup for the nearest file prefix bytes sequence to extract the next file. In other words, writing a few random bytes at the beginning of backup file will result in losing only first files, but not whole backup.
 
 Usage
 -----
