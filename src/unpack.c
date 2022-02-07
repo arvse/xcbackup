@@ -311,7 +311,7 @@ int xcbackup_unpack_callback ( void *context )
 
     if ( realunpack )
     {
-        if ( access ( path, F_OK ) > 0 )
+        if ( access ( path, F_OK ) >= 0 )
         {
             if ( unlink ( path ) < 0 )
             {
