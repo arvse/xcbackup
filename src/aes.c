@@ -16,7 +16,7 @@
 #define AES256_BLOCKLEN 16
 #define SHA256_BLOCKLEN 32
 #define DERIVE_N_ROUNDS 10000
-#define NONE_LEN (16 * AES256_BLOCKLEN)
+#define NONCE_LEN (16 * AES256_BLOCKLEN)
 
 /**
  * AES stream context
@@ -214,11 +214,11 @@ static ssize_t aes_stream_read ( struct io_stream_t *io, void *data, size_t len 
         aligned_len = CHUNK_SIZE - AES256_BLOCKLEN - SHA256_BLOCKLEN;
     }
 
-    if (aligned_len > AES256_BLOCKLEN)
+    if ( aligned_len > AES256_BLOCKLEN )
     {
         aligned_len = AES256_BLOCKLEN;
     }
-    
+
     memcpy ( context->buffer, context->tail, AES256_BLOCKLEN + SHA256_BLOCKLEN );
 
     if ( ( read_len =
@@ -235,14 +235,15 @@ static ssize_t aes_stream_read ( struct io_stream_t *io, void *data, size_t len 
         return -1;
     }
 
-    if (aligned_len == ARCHIVE_PREFIX_LENGTH)
+    if ( aligned_len == ARCHIVE_PREFIX_LENGTH )
     {
-        if (!memcmp(context->buffer + AES256_BLOCKLEN + SHA256_BLOCKLEN, xcbackup_archive_postfix, ARCHIVE_PREFIX_LENGTH))
+        if ( !memcmp ( context->buffer + AES256_BLOCKLEN + SHA256_BLOCKLEN,
+                xcbackup_archive_postfix, ARCHIVE_PREFIX_LENGTH ) )
         {
             aligned_len = 0;
         }
     }
-    
+
     if ( !aligned_len )
     {
         if ( mbedtls_md_hmac_update ( &context->md_ctx, context->tail, AES256_BLOCKLEN ) != 0 )
@@ -401,7 +402,7 @@ static int aes_stream_verify ( struct io_stream_t *io )
 
     context = ( struct aes_stream_context_t * ) io->context;
 
-    if ( !context->eof )
+    while ( !context->eof )
     {
         if ( aes_stream_read ( io, temp, sizeof ( temp ) ) < 0 )
         {
@@ -478,7 +479,7 @@ static int aes_stream_flush ( struct io_stream_t *io )
 static void aes_stream_close ( struct io_stream_t *io )
 {
     struct aes_stream_context_t *context;
-    
+
     context = ( struct aes_stream_context_t * ) io->context;
 
     mbedtls_aes_free ( &context->aes );
@@ -497,7 +498,7 @@ struct io_stream_t *input_aes_stream_new ( struct io_stream_t *internal, const c
     mbedtls_md_type_t md_type = MBEDTLS_MD_SHA256;
     uint8_t ekey[AES256_KEYLEN];
     uint8_t hkey[AES256_KEYLEN];
-    uint8_t nonce[NONE_LEN];
+    uint8_t nonce[NONCE_LEN];
 
     if ( !( context =
             ( struct aes_stream_context_t * ) malloc ( sizeof ( struct aes_stream_context_t ) ) ) )
@@ -628,7 +629,7 @@ struct io_stream_t *output_aes_stream_new ( struct io_stream_t *internal, const 
     mbedtls_md_type_t md_type = MBEDTLS_MD_SHA256;
     uint8_t ekey[AES256_KEYLEN];
     uint8_t hkey[AES256_KEYLEN];
-    uint8_t nonce[NONE_LEN];
+    uint8_t nonce[NONCE_LEN];
 
     if ( !( context =
             ( struct aes_stream_context_t * ) malloc ( sizeof ( struct aes_stream_context_t ) ) ) )
@@ -779,14 +780,14 @@ struct io_stream_t *output_aes_stream_new ( struct io_stream_t *internal, const 
 /**
  * Split input AES stream
  */
-int input_aes_stream_split ( struct io_stream_t *io, const char* password )
+int input_aes_stream_split ( struct io_stream_t *io, const char *password )
 {
     int update_keys = 0;
     struct aes_stream_context_t *context;
     mbedtls_md_type_t md_type = MBEDTLS_MD_SHA256;
     uint8_t ekey[AES256_KEYLEN];
     uint8_t hkey[AES256_KEYLEN];
-    uint8_t nonce[NONE_LEN];
+    uint8_t nonce[NONCE_LEN];
     uint8_t tmp_esalt[AES256_KEYLEN];
     uint8_t tmp_hsalt[AES256_KEYLEN];
 
@@ -796,13 +797,13 @@ int input_aes_stream_split ( struct io_stream_t *io, const char* password )
     context->unconsumed_len = 0;
 
     if ( context->internal->read_complete ( context->internal, tmp_esalt,
-            sizeof(tmp_esalt  )) < 0 )
+            sizeof ( tmp_esalt ) ) < 0 )
     {
         return -1;
     }
 
     if ( context->internal->read_complete ( context->internal, tmp_hsalt,
-            sizeof(tmp_hsalt )) < 0 )
+            sizeof ( tmp_hsalt ) ) < 0 )
     {
         return -1;
     }
@@ -818,15 +819,15 @@ int input_aes_stream_split ( struct io_stream_t *io, const char* password )
         return -1;
     }
 
-    if (memcmp(tmp_esalt, context->esalt, AES256_KEYLEN) != 0 ||
-        memcmp(tmp_hsalt, context->hsalt, AES256_KEYLEN) != 0)
+    if ( memcmp ( tmp_esalt, context->esalt, AES256_KEYLEN ) != 0 ||
+        memcmp ( tmp_hsalt, context->hsalt, AES256_KEYLEN ) != 0 )
     {
-        memcpy(context->esalt, tmp_esalt, AES256_KEYLEN);
-        memcpy(context->hsalt, tmp_hsalt, AES256_KEYLEN);
+        memcpy ( context->esalt, tmp_esalt, AES256_KEYLEN );
+        memcpy ( context->hsalt, tmp_hsalt, AES256_KEYLEN );
         update_keys = 1;
     }
-    
-    if (update_keys)
+
+    if ( update_keys )
     {
         if ( aes_stream_derive_key ( password, context->esalt, sizeof ( context->esalt ), ekey,
                 sizeof ( ekey ) ) < 0 )
@@ -845,14 +846,14 @@ int input_aes_stream_split ( struct io_stream_t *io, const char* password )
 
         memset ( ekey, '\0', sizeof ( ekey ) );
     }
-    
+
     if ( mbedtls_aes_crypt_cbc ( &context->aes, MBEDTLS_AES_DECRYPT, sizeof ( nonce ), context->iv,
             nonce, nonce ) != 0 )
     {
         return -1;
     }
 
-    if (update_keys)
+    if ( update_keys )
     {
         if ( aes_stream_derive_key ( password, context->hsalt, sizeof ( context->hsalt ), hkey,
                 sizeof ( hkey ) ) < 0 )
@@ -876,12 +877,12 @@ int input_aes_stream_split ( struct io_stream_t *io, const char* password )
         }
 
         memset ( hkey, '\0', sizeof ( hkey ) );
-        
+
     } else
     {
         mbedtls_md_hmac_reset ( &context->md_ctx );
     }
-    
+
     if ( context->internal->read_complete ( context->internal, context->tail,
             sizeof ( context->tail ) ) < 0 )
     {
@@ -897,12 +898,12 @@ int input_aes_stream_split ( struct io_stream_t *io, const char* password )
 int output_aes_stream_split ( struct io_stream_t *io )
 {
     struct aes_stream_context_t *context;
-    uint8_t nonce[NONE_LEN];
+    uint8_t nonce[NONCE_LEN];
 
     context = ( struct aes_stream_context_t * ) io->context;
-    
+
     context->unconsumed_len = 0;
-    
+
     if ( aes_stream_random_init ( context ) < 0 )
     {
         return -1;
@@ -939,7 +940,7 @@ int output_aes_stream_split ( struct io_stream_t *io )
     {
         return -1;
     }
-    
+
     if ( mbedtls_aes_crypt_cbc ( &context->aes, MBEDTLS_AES_ENCRYPT, sizeof ( nonce ), context->iv,
             nonce, nonce ) != 0 )
     {
@@ -950,7 +951,7 @@ int output_aes_stream_split ( struct io_stream_t *io )
     {
         return -1;
     }
-    
+
     mbedtls_md_hmac_reset ( &context->md_ctx );
 
     return 0;

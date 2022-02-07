@@ -345,8 +345,8 @@ struct xcbackup_node_t *build_file_net ( const char *paths[] )
 /**
  * Browse file net internal
  */
-static int file_net_iter_in ( struct xcbackup_node_t *node, struct name_stack_t *stack, void *context,
-    file_net_iter_callback callback )
+static int file_net_iter_in ( struct xcbackup_node_t *node, struct name_stack_t *stack,
+    void *context, file_net_iter_callback callback )
 {
     struct xcbackup_node_t *ptr;
 

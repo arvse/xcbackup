@@ -12,7 +12,11 @@
 #define ARCHIVE_PREFIX_LENGTH 16
 
 #define OPTION_VERBOSE 1
-#define OPTION_TESTONLY 2
+#define OPTION_LISTONLY 2
+#define OPTION_TESTONLY 4
+#define OPTION_OFFSET 8
+
+#define RANDOM_OFFSET ((unsigned long) -1)
 
 /**
  * SBox Archive Node
@@ -44,10 +48,12 @@ struct ext_buffer_t
  */
 struct iter_context_t
 {
+    int fd;
     int options;
+    unsigned long size;
     struct io_stream_t *io;
     struct io_stream_t *file;
-    const char* password;
+    const char *password;
     struct ext_buffer_t extbuf;
     char buffer[CHUNK_SIZE];
 };
@@ -76,7 +82,8 @@ typedef int ( *file_net_iter_callback ) ( void *, struct xcbackup_node_t *, cons
 /**
  * Pack files to an archive
  */
-extern int xcbackup_pack_archive ( const char *archive, uint32_t options, const char *password, const char *files[] );
+extern int xcbackup_pack_archive ( const char *archive, uint32_t options, const char *password,
+    unsigned long offset, const char *files[] );
 
 /** 
  * Unpack files from an archive
@@ -142,7 +149,7 @@ extern struct io_stream_t *output_aes_stream_new ( struct io_stream_t *internal,
  * Split input AES stream
  */
 #ifdef ENABLE_ENCRYPTION
-extern int input_aes_stream_split ( struct io_stream_t *io,const char* password );
+extern int input_aes_stream_split ( struct io_stream_t *io, const char *password );
 #endif
 
 /**

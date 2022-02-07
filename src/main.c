@@ -9,15 +9,12 @@
  */
 static void show_usage ( void )
 {
-    fprintf ( stderr, "usage: xcbackup -cxts stdin|password archive path [paths...]\n"
-        "\n"
-        "version: " XCBACKUP_VERSION "\n"
-        "\n"
-        "options:\n"
-        "  -c    create new archive\n"
-        "  -x    extract archive\n"
-        "  -t    test archive checksums\n"
-        "  -s    do not print progress\n" "\n" );
+    fprintf ( stderr,
+        "usage: xcbackup -cxlts stdin|password [-o random|offset] archive path [paths...]\n" "\n"
+        "version: " XCBACKUP_VERSION "\n" "\n" "options:\n" "  -c    create new archive\n"
+        "  -x    extract archive\n" "  -l    list files in archive\n"
+        "  -t    test archive checksums\n" "  -s    do not print progress\n"
+        "  -o    output file offset\n" "\n" );
 }
 
 /**
@@ -158,34 +155,41 @@ int main ( int argc, char *argv[] )
 {
     int status = 0;
     uint32_t options = OPTION_VERBOSE;
-    int arg_off;
+    int arg_off = 1;
     int flag_c;
     int flag_x;
+    int flag_l;
     int flag_t;
     int flag_s;
+    unsigned long offset;
     const char *password = NULL;
 #ifdef ENABLE_STDIN_PASSWORD
     char password_buf[256];
 #endif
 
     /* Validate arguments count */
-    if ( argc < 3 )
+    if ( argc < arg_off + 1 )
     {
         show_usage (  );
         return 1;
     }
 
-    /* Parse flags from arguments */
-    flag_c = check_flag ( argv[1], 'c' );
-    flag_x = check_flag ( argv[1], 'x' );
-    flag_t = check_flag ( argv[1], 't' );
-    flag_s = check_flag ( argv[1], 's' );
+    /* Do not buffer outputs */
+    setbuf ( stdout, NULL );
+    setbuf ( stderr, NULL );
 
-    /* Get password from command line */
-    arg_off = 1;
+    /* Parse flags from arguments */
+    flag_c = check_flag ( argv[arg_off], 'c' );
+    flag_x = check_flag ( argv[arg_off], 'x' );
+    flag_l = check_flag ( argv[arg_off], 'l' );
+    flag_t = check_flag ( argv[arg_off], 't' );
+    flag_s = check_flag ( argv[arg_off], 's' );
+
+    /* Shift arguments array */
+    arg_off++;
 
     /* Tasks are exclusive */
-    if ( flag_c + flag_x + flag_t != 1 )
+    if ( flag_c + flag_x + flag_l + flag_t != 1 )
     {
         show_usage (  );
         return 1;
@@ -197,19 +201,30 @@ int main ( int argc, char *argv[] )
         options &= ~OPTION_VERBOSE;
     }
 
+    /* Set list only option if needed */
+    if ( flag_l )
+    {
+        options |= OPTION_LISTONLY;
+    }
+
     /* Set test only option if needed */
     if ( flag_t )
     {
         options |= OPTION_TESTONLY;
     }
 
-    /* Get password from command line */
-    if ( argc < arg_off + 3 )
+    /* Validate arguments count */
+    if ( argc < arg_off + 1 )
     {
         show_usage (  );
         return 1;
     }
-    password = argv[2];
+
+    /* Get password from command line */
+    password = argv[arg_off];
+
+    /* Shift arguments array */
+    arg_off++;
 
     if ( !strcmp ( password, "stdin" ) )
     {
@@ -233,10 +248,46 @@ int main ( int argc, char *argv[] )
         return 1;
     }
 
+    /* Validate arguments count */
+    if ( argc < arg_off + 1 )
+    {
+        show_usage (  );
+        return 1;
+    }
+
+    /* Parse output file offset if needed */
+    if ( !strcmp ( argv[arg_off], "-o" ) )
+    {
+        arg_off++;
+
+        if ( argc < arg_off + 1 )
+        {
+            show_usage (  );
+            return 1;
+        }
+
+        if ( !strcmp ( argv[arg_off], "random" ) )
+        {
+            offset = RANDOM_OFFSET;
+
+        } else
+        {
+            if ( sscanf ( argv[arg_off], "%lu", &offset ) <= 0 )
+            {
+                show_usage (  );
+                return 1;
+            }
+        }
+
+        options |= OPTION_OFFSET;
+
+        arg_off++;
+    }
+
     /* Perform the task */
     if ( flag_c )
     {
-        if ( argc < arg_off + 4 )
+        if ( argc < arg_off + 2 )
         {
             show_usage (  );
             return 1;
@@ -246,18 +297,18 @@ int main ( int argc, char *argv[] )
         status = -1;
 #else
         status =
-            xcbackup_pack_archive ( argv[arg_off + 2], options, password,
-            ( const char ** ) ( argv + arg_off + 3 ) );
+            xcbackup_pack_archive ( argv[arg_off], options, password, offset,
+            ( const char ** ) ( argv + arg_off + 1 ) );
 
 #endif
-    } else if ( flag_x || flag_t )
+    } else if ( flag_x || flag_l || flag_t )
     {
-        if ( argc != arg_off + 3 )
+        if ( argc != arg_off + 1 )
         {
             show_usage (  );
             return 1;
         }
-        status = xcbackup_unpack_archive ( argv[arg_off + 2], options, password );
+        status = xcbackup_unpack_archive ( argv[arg_off], options, password );
     }
 
     /* Finally print error code and quit if found */
