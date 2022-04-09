@@ -99,7 +99,7 @@ int xcbackup_unpack_callback ( void *context )
     uint8_t temp[ARCHIVE_PREFIX_LENGTH];
     uint8_t prefix[ARCHIVE_PREFIX_LENGTH] = { 0 };
     struct stat statbuf;
-    const char *tmppath = "/tmp/tmpfile";
+    const char *tmppath = "tmpfile";
 
     iter_context = ( struct iter_context_t * ) context;
 
@@ -171,7 +171,7 @@ int xcbackup_unpack_callback ( void *context )
         {
             if ( !( iter_context->options & OPTION_LISTONLY ) )
             {
-                fprintf ( stderr, "Warning: Invalid checkum at '%s'.\n", path );
+                fprintf ( stderr, "Warning: Invalid checksum at '%s'.\n", path );
                 return -1;
             }
 
@@ -216,16 +216,6 @@ int xcbackup_unpack_callback ( void *context )
         return 0;
     }
 
-    if ( stat ( path, &statbuf ) >= 0 )
-    {
-        if ( statbuf.st_mtime > modified )
-        {
-            fprintf ( stderr, "Warning: Skipping file '%s' due to old timestamp.\n", path );
-            taskcode = 'k';
-            realunpack = 0;
-        }
-    }
-
     if ( iter_context->io->read_complete ( iter_context->io, &size, sizeof ( size ) ) < 0 )
     {
         return -1;
@@ -239,6 +229,16 @@ int xcbackup_unpack_callback ( void *context )
     }
 
     modified = ntohl ( modified );
+
+    if ( stat ( path, &statbuf ) >= 0 )
+    {
+        if ( statbuf.st_mtime > modified )
+        {
+            fprintf ( stderr, "Warning: Skipping file '%s' due to old timestamp.\n", path );
+            taskcode = 'k';
+            realunpack = 0;
+        }
+    }
 
     if ( realunpack )
     {
@@ -303,7 +303,7 @@ int xcbackup_unpack_callback ( void *context )
         {
             if ( !( iter_context->options & OPTION_LISTONLY ) )
             {
-                fprintf ( stderr, "Warning: Invalid checkum at '%s'\n", path );
+                fprintf ( stderr, "Warning: Invalid checksum at '%s'\n", path );
                 return -1;
             }
         }

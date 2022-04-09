@@ -143,7 +143,7 @@ int xcbackup_pack_callback ( void *context, struct xcbackup_node_t *node, const 
     }
 
     net_size = htonl ( node->size );
-    net_modified = time ( NULL );
+    net_modified = htonl ( time ( NULL ) );
 
     if ( iter_context->io->write_complete ( iter_context->io, &net_size, sizeof ( net_size ) ) < 0 )
     {

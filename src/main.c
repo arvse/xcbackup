@@ -229,11 +229,15 @@ int main ( int argc, char *argv[] )
     if ( !strcmp ( password, "stdin" ) )
     {
 #ifdef ENABLE_STDIN_PASSWORD
+        printf ( "Please enter password: " );
+
         if ( read_stdin_password ( password_buf, sizeof ( password_buf ) ) < 0 )
         {
             fprintf ( stderr, "Error: Failed to read stdin password.\n" );
             return 1;
         }
+
+        putchar ( '\n' );
 
         password = password_buf;
 #else
