@@ -88,7 +88,8 @@ extern int xcbackup_pack_archive ( const char *archive, uint32_t options, const 
 /** 
  * Unpack files from an archive
  */
-extern int xcbackup_unpack_archive ( const char *archive, uint32_t options, const char *password );
+extern int xcbackup_unpack_archive ( const char *archive, uint32_t options, const char *password,
+    unsigned long offset );
 
 /**
  * Show operation progress with current file path

@@ -312,7 +312,7 @@ int main ( int argc, char *argv[] )
             show_usage (  );
             return 1;
         }
-        status = xcbackup_unpack_archive ( argv[arg_off], options, password );
+        status = xcbackup_unpack_archive ( argv[arg_off], options, password, offset );
     }
 
     /* Finally print error code and quit if found */

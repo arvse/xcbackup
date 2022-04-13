@@ -12,7 +12,7 @@ struct file_stream_context_t
     int fd;
 };
 
-/*
+/**
  * Read data from file stream
  */
 static ssize_t file_stream_read ( struct io_stream_t *io, void *data, size_t len )
@@ -24,7 +24,7 @@ static ssize_t file_stream_read ( struct io_stream_t *io, void *data, size_t len
     return read ( context->fd, data, len );
 }
 
-/*
+/**
  * Write data to file stream
  */
 static ssize_t file_stream_write ( struct io_stream_t *io, const void *data, size_t len )
@@ -36,7 +36,7 @@ static ssize_t file_stream_write ( struct io_stream_t *io, const void *data, siz
     return write ( context->fd, data, len );
 }
 
-/*
+/**
  * Verify file stream integrity
  */
 static int file_stream_verify ( struct io_stream_t *io )
@@ -45,7 +45,7 @@ static int file_stream_verify ( struct io_stream_t *io )
     return 0;
 }
 
-/*
+/**
  * Flush file stream output to file
  */
 static int file_stream_flush ( struct io_stream_t *io )
@@ -63,7 +63,7 @@ static int file_stream_flush ( struct io_stream_t *io )
 #endif
 }
 
-/*
+/**
  * Close IO stream
  */
 static void file_stream_close ( struct io_stream_t *io )

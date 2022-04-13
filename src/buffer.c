@@ -29,7 +29,7 @@ static size_t dequeue_buffer ( struct buffer_stream_context_t *context, void *da
     return dequeue_len;
 }
 
-/*
+/**
  * Read data from buffer stream
  */
 static ssize_t buffer_stream_read ( struct io_stream_t *io, void *data, size_t len )
@@ -57,7 +57,7 @@ static ssize_t buffer_stream_read ( struct io_stream_t *io, void *data, size_t l
     return dequeue_buffer ( context, data, len );
 }
 
-/*
+/**
  * Write data to buffer stream
  */
 static ssize_t buffer_stream_write ( struct io_stream_t *io, const void *data, size_t len )
@@ -85,7 +85,7 @@ static ssize_t buffer_stream_write ( struct io_stream_t *io, const void *data, s
     return cache_len;
 }
 
-/*
+/**
  * Verify buffer stream integrity
  */
 static int buffer_stream_verify ( struct io_stream_t *io )
@@ -97,7 +97,7 @@ static int buffer_stream_verify ( struct io_stream_t *io )
     return context->internal->verify ( context->internal );
 }
 
-/*
+/**
  * Flush buffer stream output
  */
 static int buffer_stream_flush ( struct io_stream_t *io )
@@ -120,7 +120,7 @@ static int buffer_stream_flush ( struct io_stream_t *io )
     return context->internal->flush ( context->internal );
 }
 
-/*
+/**
  * Close IO stream
  */
 static void buffer_stream_close ( struct io_stream_t *io )

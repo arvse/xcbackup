@@ -299,11 +299,12 @@ int xcbackup_unpack_callback ( void *context )
             return -1;
         }
 
+        fprintf ( stderr, "Warning: Invalid checksum at '%s'\n", path );
+
         if ( realunpack )
         {
             if ( !( iter_context->options & OPTION_LISTONLY ) )
             {
-                fprintf ( stderr, "Warning: Invalid checksum at '%s'\n", path );
                 return -1;
             }
         }
@@ -354,7 +355,8 @@ int xcbackup_unpack_callback ( void *context )
 /** 
  * Unpack files from an archive
  */
-int xcbackup_unpack_archive ( const char *archive, uint32_t options, const char *password )
+int xcbackup_unpack_archive ( const char *archive, uint32_t options, const char *password,
+    unsigned long offset )
 {
     int fd;
     int status = 0;
@@ -367,6 +369,18 @@ int xcbackup_unpack_archive ( const char *archive, uint32_t options, const char 
     {
         perror ( archive );
         return -1;
+    }
+
+    if ( options & OPTION_OFFSET )
+    {
+        printf ( "input file offset: %lu bytes\n", offset );
+
+        if ( lseek ( fd, offset, SEEK_SET ) < 0 )
+        {
+            perror ( "lseek" );
+            close ( fd );
+            return -1;
+        }
     }
 
     if ( !( raw = file_stream_new ( fd ) ) )

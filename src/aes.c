@@ -147,7 +147,7 @@ static size_t aes_stream_shift_unconsumed ( struct aes_stream_context_t *context
     return shift_len;
 }
 
-/*
+/**
  * Get AES PKCS#7 padding length
  */
 static int pkcs7_get_padding_length ( const uint8_t * input, size_t length, size_t *result )
@@ -180,12 +180,13 @@ static int pkcs7_get_padding_length ( const uint8_t * input, size_t length, size
     return 0;
 }
 
-/*
+/**
  * Read data from AES stream
  */
 static ssize_t aes_stream_read ( struct io_stream_t *io, void *data, size_t len )
 {
     ssize_t read_len;
+    size_t offset;
     size_t aligned_len;
     size_t padding_len;
     struct aes_stream_context_t *context;
@@ -237,10 +238,14 @@ static ssize_t aes_stream_read ( struct io_stream_t *io, void *data, size_t len 
 
     if ( aligned_len == ARCHIVE_PREFIX_LENGTH )
     {
-        if ( !memcmp ( context->buffer + AES256_BLOCKLEN + SHA256_BLOCKLEN,
-                xcbackup_archive_postfix, ARCHIVE_PREFIX_LENGTH ) )
+        for ( offset = 1; offset <= AES256_BLOCKLEN; offset++ )
         {
-            aligned_len = 0;
+            if ( !memcmp ( context->buffer + SHA256_BLOCKLEN + offset, xcbackup_archive_postfix,
+                    ARCHIVE_PREFIX_LENGTH ) )
+            {
+                aligned_len = 0;
+                break;
+            }
         }
     }
 
@@ -296,7 +301,7 @@ static ssize_t aes_stream_read ( struct io_stream_t *io, void *data, size_t len 
     return aligned_len;
 }
 
-/*
+/**
  * Write data to AES stream
  */
 static ssize_t aes_stream_write ( struct io_stream_t *io, const void *data, size_t len )
@@ -391,7 +396,7 @@ static ssize_t aes_stream_write ( struct io_stream_t *io, const void *data, size
     return offset;
 }
 
-/*
+/**
  * Verify AES stream integrity
  */
 static int aes_stream_verify ( struct io_stream_t *io )
@@ -423,7 +428,7 @@ static int aes_stream_verify ( struct io_stream_t *io )
     return 0;
 }
 
-/*
+/**
  * Flush AES stream output
  */
 static int aes_stream_flush ( struct io_stream_t *io )
@@ -473,7 +478,7 @@ static int aes_stream_flush ( struct io_stream_t *io )
     return 0;
 }
 
-/*
+/**
  * Close AES stream
  */
 static void aes_stream_close ( struct io_stream_t *io )
