@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------
- * SBox - Archive Unpack Task
+ * XCBackup - Archive Unpack Task
  * ------------------------------------------------------------------ */
 
 #include "xcbackup.h"
@@ -79,7 +79,7 @@ static void remove_unprintable ( char *input )
 }
 
 /**
- * SBox archive unpack callback
+ * XCBackup archive unpack callback
  */
 int xcbackup_unpack_callback ( void *context )
 {

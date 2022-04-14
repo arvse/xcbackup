@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------
- * SBox - Project Shared Header
+ * XCBackup - Project Shared Header
  * ------------------------------------------------------------------ */
 
 #include "config.h"
@@ -19,7 +19,7 @@
 #define RANDOM_OFFSET ((unsigned long) -1)
 
 /**
- * SBox Archive Node
+ * XCBackup Archive Node
  */
 struct xcbackup_node_t
 {
@@ -44,7 +44,7 @@ struct ext_buffer_t
 };
 
 /**
- * SBox iterate context
+ * XCBackup iterate context
  */
 struct iter_context_t
 {
@@ -85,7 +85,7 @@ typedef int ( *file_net_iter_callback ) ( void *, struct xcbackup_node_t *, cons
 extern int xcbackup_pack_archive ( const char *archive, uint32_t options, const char *password,
     unsigned long offset, const char *files[] );
 
-/** 
+/**
  * Unpack files from an archive
  */
 extern int xcbackup_unpack_archive ( const char *archive, uint32_t options, const char *password,
@@ -97,12 +97,12 @@ extern int xcbackup_unpack_archive ( const char *archive, uint32_t options, cons
 extern void show_progress ( char action, const char *path );
 
 /**
- * SBox archive prefix
+ * XCBackup archive prefix
  */
 extern const uint8_t xcbackup_archive_prefix[ARCHIVE_PREFIX_LENGTH];
 
 /**
- * SBox archive postfix
+ * XCBackup archive postfix
  */
 extern const uint8_t xcbackup_archive_postfix[ARCHIVE_PREFIX_LENGTH];
 /**

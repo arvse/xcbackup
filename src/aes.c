@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------
- * SBox - AES-CBC-256-PKCS#7 Encrypted Stream Impl.
+ * XCBackup - AES-CBC-256-PKCS#7 Encrypted Stream Impl.
  * ------------------------------------------------------------------ */
 
 #ifdef ENABLE_ENCRYPTION

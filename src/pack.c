@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------
- * SBox - Archive Pack Task
+ * XCBackup - Archive Pack Task
  * ------------------------------------------------------------------ */
 
 #include "xcbackup.h"
@@ -7,7 +7,7 @@
 #ifndef EXTRACT_ONLY
 
 /**
- * SBox archive pack callback
+ * XCBackup archive pack callback
  */
 int xcbackup_pack_callback ( void *context, struct xcbackup_node_t *node, const char *path )
 {
@@ -194,7 +194,7 @@ int xcbackup_pack_callback ( void *context, struct xcbackup_node_t *node, const 
 }
 
 /**
- * SBox archive measure callback
+ * XCBackup archive measure callback
  */
 int xcbackup_measure_callback ( void *context, struct xcbackup_node_t *node, const char *path )
 {

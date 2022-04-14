@@ -1,4 +1,4 @@
-# SBox Makefile
+# XCBackup Makefile
 CONFIG=-D_GNU_SOURCE -DENABLE_ENCRYPTION -DENABLE_STDIN_PASSWORD
 INCLUDES=-I include $(CONFIG)
 INDENT_FLAGS=-br -ce -i4 -bl -bli0 -bls -c4 -cdw -ci4 -cs -nbfda -l100 -lp -prs -nlp -nut -nbfde -npsl -nss
