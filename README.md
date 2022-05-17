@@ -2,13 +2,13 @@ About
 -----
 This tools keeps file encrypted with separate file headers. Let's create a backup on disk device:
 ```
-xcbackup -c stdin /dev/sdzzz dir1 dir2 file1
+sudo xcbackup -c stdin /dev/sdzzz dir1 dir2 file1
 ```
 stdin <- read password from terminal
 
 Then backup could be extracted to current directory with:
 ```
-xcbackup -x stdin /dev/sdzzz
+sudo xcbackup -x stdin /dev/sdzzz
 ```
 stdin <- read password from terminal
 
