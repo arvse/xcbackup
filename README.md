@@ -40,4 +40,4 @@ Build & Install
 Update file permissions after extract
 -------------------------------------
 
-sudo chown -R user:user <destination>
+sudo chown -R user:user destination-directory
