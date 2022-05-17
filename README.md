@@ -36,3 +36,8 @@ Build & Install
 1. Install mbedtls-dev with: `sudo apt install libmbedtls-dev`
 2. Build xcbackup with: `make`
 3. Install xcbackup with: `sudo make install`
+
+Update file permissions after extract
+-------------------------------------
+
+sudo chown -R user:user <destination>
